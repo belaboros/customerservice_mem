@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customerservicemem
+  labels:
+    app: customerservicemem
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: customerservicemem
+  template:
+    metadata:
+      labels:
+        app: customerservicemem
+    spec:
+      containers:
+      - name: customerservicemem
+        image: belaboros/customerservicemem
+        ports:
+        - containerPort: 9090
+        livenessProbe:
+          httpGet:
+            path: /info
+            port: 9090
+            httpHeaders:
+            - name: Custom-Header
+              value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customerservicemem
+  labels:
+    run: customerservicemem
+spec:
+  ports:
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app: customerservicemem
+
+
+
+
